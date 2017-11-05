@@ -8,7 +8,7 @@
 
 #include<stdio.h>
 #define INFINITE 999
-#define MAX 10
+#define MAX 100
 
 void dijkstra(int bobot[MAX][MAX],int n,int awal,int akhir);
 
@@ -16,18 +16,24 @@ int main() {
     int bobot[MAX][MAX],i,j,n,awal,akhir;
     printf("Masukkan jumlah vertex: ");
     scanf("%d",&n);
-    printf("\nMasukkan bobot pada adjacency matrix:\n");
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
-            scanf("%d",&bobot[i][j]);
+
+    if (n>0) {
+        printf("Masukkan bobot pada adjacency matrix:\n");
+        for(i=0;i<n;i++){
+            for(j=0;j<n;j++){
+                
+                scanf("%d", &bobot[i][j]);
+            }
         }
-    }
+    }else return 0;
     
     printf("\nMasukkan vertex awal: ");
     scanf("%d",&awal);
     printf("Masukkan vertex akhir: ");
     scanf("%d", &akhir);
-    dijkstra(bobot,n,awal,akhir);
+    if (akhir>=n) {
+        printf("Vertex hanya sampai %d\n", n-1);
+    }else dijkstra(bobot,n,awal,akhir);
     
     return 0;
 }
@@ -77,9 +83,9 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
         jum++;
     }
     
-    for(i=0;i<n;i++) {
-        if(i!=awal && i==akhir) {
-            printf("\\nBobot ke vertex %d=%d\n",i,jarak[i]);
+    for(i=0;i<akhir+1;i++) {
+        if(i!=awal) {
+            printf("\n\nBobot ke vertex %d=%d\n",i,jarak[i]);
             printf("Lintasan : %d",i);
             
             j=i;
