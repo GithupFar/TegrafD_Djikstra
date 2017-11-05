@@ -53,7 +53,7 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
     flag[awal]=1;
     jum=1;
     
-    while(jum<akhir-1) {
+    while(jum<n-1) {
         jarak_minim=INFINITE;
         
         //vertex selanjutnya ngasih vertex ke jarak minimum
@@ -79,7 +79,7 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
     
     for(i=0;i<n;i++) {
         if(i!=awal && i==akhir) {
-            printf("\nJarak dari vertex %d=%d\n",i,jarak[i]);
+            printf("\\nBobot ke vertex %d=%d\n",i,jarak[i]);
             printf("Lintasan : %d",i);
             
             j=i;
