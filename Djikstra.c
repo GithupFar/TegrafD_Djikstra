@@ -1,149 +1,122 @@
-// C++ Program for Dijkstra's dial implementation
-#include<bits/stdc++.h>
-using namespace std;
-# define INF 0x3f3f3f3f
+#include <stdio.h>
+#include <limits.h>
+#include <stdbool.h>
+#define V 9
 
-// This class represents a directed graph using
-// adjacency list representation
-class Graph
+int minDistance(int dist[], bool sptSet[])//,int V)
 {
-	int V; // No. of vertices
+	int min = INT_MAX, min_index=0, v;
 
-	// In a weighted graph, we need to store vertex
-	// and weight pair for every edge
-	list< pair<int, int> > *adj;
+	for (v = 0; v < V; v++)
+		if (sptSet[v] == false && dist[v] < min)
+			min = dist[v] ,min_index = v;
 
-public:
-	Graph(int V); // Constructor
-
-	// function to add an edge to graph
-	void addEdge(int u, int v, int w);
-
-	// prints shortest path from s
-	void shortestPath(int s, int W);
-};
-
-// Allocates memory for adjacency list
-Graph::Graph(int V)
-{
-	this->V = V;
-	adj = new list< pair<int, int> >[V];
+	return min_index;
 }
 
-// adds edge between u and v of weight w
-void Graph::addEdge(int u, int v, int w)
+int printSolution(int dist[], int n, int parent[],int tujuan)
 {
-	adj[u].push_back(make_pair(v, w));
-	adj[v].push_back(make_pair(u, w));
-}
-
-// Prints shortest paths from src to all other vertices.
-// W is the maximum weight of an edge
-void Graph::shortestPath(int src, int W)
-{
-	/* With each distance, iterator to that vertex in
-	its bucket is stored so that vertex can be deleted
-	in O(1) at time of updation. So
-	dist[i].first = distance of ith vertex from src vertex
-	dits[i].second = iterator to vertex i in bucket number */
-	vector<pair<int, list<int>::iterator> > dist(V);
-
-	// Initialize all distances as infinite (INF)
-	for (int i = 0; i < V; i++)
-		dist[i].first = INF;
-
-	// Create buckets B[].
-	// B[i] keep vertex of distance label i
-	list<int> B[W * V + 1];
-
-	B[0].push_back(src);
-	dist[src].first = 0;
-
-	//
-	int idx = 0;
-	while (1)
+	int src = tujuan;
+	printf("Vertex\t Distance\tPath\n");
+	for (int i = 1; i < n; i++)
 	{
-		// Go sequentially through buckets till one non-empty
-		// bucket is found
-		while (B[idx].size() == 0 && idx < W*V)
-			idx++;
+		printf("%2d -> %2d      %2d        ", src, i, dist[i]);
+		printPath(parent, i);
+		putchar('\n');
+	}
+}
 
-		// If all buckets are empty, we are done.
-		if (idx == W * V)
-			break;
+void dijkstra(int graph[V][V], int src)//, int n)
+{
+	int dist[V]; // The output array. dist[i] will hold
+				// the shortest distance from src to i
 
-		// Take top vertex from bucket and pop it
-		int u = B[idx].front();
-		B[idx].pop_front();
+	// sptSet[i] will true if vertex i is included / in shortest
+	// path tree or shortest distance from src to i is finalized
+	bool sptSet[V];
 
-		// Process all adjacents of extracted vertex 'u' and
-		// update their distanced if required.
-		for (auto i = adj[u].begin(); i != adj[u].end(); ++i)
-		{
-			int v = (*i).first;
-			int weight = (*i).second;
+	// Parent array to store shortest path tree
+	int parent[V];
 
-			int du = dist[u].first;
-			int dv = dist[v].first;
-
-			// If there is shorted path to v through u.
-			if (dv > du + weight)
-			{
-				// If dv is not INF then it must be in B[dv]
-				// bucket, so erase its entry using iterator
-				// in O(1)
-				if (dv != INF)
-					B[dv].erase(dist[v].second);
-
-				// updating the distance
-				dist[v].first = du + weight;
-				dv = dist[v].first;
-
-				// pushing vertex v into updated distance's bucket
-				B[dv].push_front(v);
-
-				// storing updated iterator in dist[v].second
-				dist[v].second = B[dv].begin();
-			}
-		}
+	// Initialize all distances as INFINITE and stpSet[] as false
+	for (int i = 0; i < V; i++)
+	{
+		parent[src] = -1;
+		dist[i] = INT_MAX;
+		sptSet[i] = false;
 	}
 
-	// Print shortest distances stored in dist[]
-	printf("Vertex Distance from Source\n");
-	for (int i = 0; i < V; ++i)
-		printf("%d	 %d\n", i, dist[i].first);
+	// Distance of source vertex from itself is always 0
+	dist[src]=0;
+
+	// Find shortest path for all vertices
+	for (int count = 0; count < V-1; count++)
+	{
+		// Pick the minimum distance vertex from the set of
+		// vertices not yet processed. u is always equal to src
+		// in first iteration.
+		int u = minDistance(dist, sptSet);//, V);
+
+		// Mark the picked vertex as processed
+		sptSet[u] = true;
+
+		// Update dist value of the adjacent vertices of the
+		// picked vertex.
+		for (int v = 0; v < V; v++)
+
+			// Update dist[v] only if is not in sptSet, there is
+			// an edge from u to v, and total weight of path from
+			// src to v through u is smaller than current value of
+			// dist[v]
+			if (!sptSet[v] && graph[u][v] &&
+				dist[u] + graph[u][v] < dist[v])
+			{
+				parent[v] = u;
+				dist[v] = dist[u] + graph[u][v];
+			}
+	}
+    //int src1=src;
+	// print the constructed distance array
+	printSolution(dist, V, parent,src);
 }
 
-// Driver program to test methods of graph class
+
+void printPath(int parent[], int j)
+{
+	if (parent[j]==-1){ //j is source
+        printf("%d ", j);
+		return;
+	}
+
+	printPath(parent, parent[j]);
+	printf("%d ", j);
+}
+
 int main()
 {
-	// create the graph given in above fugure
-	int V,vdest,vscr,weight; //number of vertex int V = 9;
-	Graph g(V);
-    printf("Masukkan jumlah vertex: ");
-    scanf("%d", &V);
-    printf("Masukkan Adjacency list nya: \n");
+    int v,x,y;
+    //printf("Masukkan jumlah vertexnya :");
+    //scanf("%d", &V);
+    int graph[V][V];
+    for(y=0;y<V;y++){
+        for(x=0;x<V;x++){
+            scanf("%d", &graph[y][x]);
+        }
+    }
 
-    scanf("%d%d%d", &vdest,&vscr,&weight );
-	// making above shown graph
-	g.addEdge(0, 1, 4);
-	g.addEdge(0, 7, 8);
-	g.addEdge(1, 2, 8);
-	g.addEdge(1, 7, 11);
-	g.addEdge(2, 3, 7);
-	g.addEdge(2, 8, 2);
-	g.addEdge(2, 5, 4);
-	g.addEdge(3, 4, 9);
-	g.addEdge(3, 5, 14);
-	g.addEdge(4, 5, 10);
-	g.addEdge(5, 6, 2);
-	g.addEdge(6, 7, 1);
-	g.addEdge(6, 8, 6);
-	g.addEdge(7, 8, 7);
-	*/
+	/* //Let us create the example graph discussed above
+	int graph[V][V] = {{0, 4, 0, 0, 0, 0, 0, 8, 0},
+					{4, 0, 8, 0, 0, 0, 0, 11, 0},
+					{0, 8, 0, 7, 0, 4, 0, 0, 2},
+					{0, 0, 7, 0, 9, 14, 0, 0, 0},
+					{0, 0, 0, 9, 0, 10, 0, 0, 0},
+					{0, 0, 4, 0, 10, 0, 2, 0, 0},
+					{0, 0, 0, 14, 0, 2, 0, 1, 6},
+					{8, 11, 0, 0, 0, 0, 1, 0, 7},
+					{0, 0, 2, 0, 0, 0, 6, 7, 0}
+					};*/
 
-	// maximum weighted edge - 14
-	g.shortestPath(0, 14);
+	dijkstra(graph, 0);//, V);
 
 	return 0;
 }
