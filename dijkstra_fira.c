@@ -21,7 +21,6 @@ int main() {
         printf("Masukkan bobot pada adjacency matrix:\n");
         for(i=0;i<n;i++){
             for(j=0;j<n;j++){
-                
                 scanf("%d", &bobot[i][j]);
             }
         }
@@ -84,7 +83,7 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
     }
     
     for(i=0;i<akhir+1;i++) {
-        if(i!=awal) {
+        if(i!=awal&&i==akhir) {
             printf("\n\nBobot ke vertex %d=%d\n",i,jarak[i]);
             printf("Lintasan : %d",i);
             
