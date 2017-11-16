@@ -39,8 +39,9 @@ int main() {
 
 void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
     
-    int temp[MAX][MAX],jarak[MAX],pred[MAX],flag[MAX],jum,jarak_minim,vertex_selanjutnya,i,j;
+    int temp[MAX][MAX],jarak[MAX],pred[MAX],flag[MAX],jum,jarak_minim,vertex_selanjutnya = 0,i,j;
     
+    //memindahkan nilai bobot ke temporary
     for(i=0;i<n;i++){
         for(j=0;j<n;j++){
             if(bobot[i][j]==0) temp[i][j]=INFINITE;
@@ -48,12 +49,14 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
         }
     }
     
+    //inisialisasi semua vertex yg berhub dg vertex awal
     for(i=0;i<n;i++) {
         jarak[i]=temp[awal][i];
         pred[i]=awal;
         flag[i]=0;
     }
     
+    //inisialisasi vertex awal
     jarak[awal]=0;
     flag[awal]=1;
     jum=1;
@@ -61,7 +64,7 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
     while(jum<n-1) {
         jarak_minim=INFINITE;
         
-        //vertex selanjutnya ngasih vertex ke jarak minimum
+        //cari jarak terpendek vertex yang belum dikunjungi
         for(i=0;i<n;i++){
             if(jarak[i]<jarak_minim&&!flag[i]){
                 jarak_minim=jarak[i];
@@ -69,8 +72,9 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
             }
         }
         
-        //cek apa ada lintasan yang lebih baik lewat vertex selanjutnya
         flag[vertex_selanjutnya]=1;
+        
+        //cari jarak terpendek yg berhub dengan vertex_selanjutnya
         for(i=0;i<n;i++){
             if(!flag[i]){
                 if(jarak_minim+temp[vertex_selanjutnya][i]<jarak[i]) {
@@ -82,17 +86,13 @@ void dijkstra(int bobot[MAX][MAX],int n,int awal, int akhir) {
         jum++;
     }
     
-    for(i=0;i<akhir+1;i++) {
-        if(i!=awal&&i==akhir) {
-            printf("\n\nBobot ke vertex %d=%d\n",i,jarak[i]);
-            printf("Lintasan : %d",i);
+    printf("\nBobot ke vertex %d=%d\n",akhir,jarak[akhir]);
+    printf("Lintasan : %d",akhir);
             
-            j=i;
-            while (j!=awal) {
-                j=pred[j];
-                printf("<-%d",j);
-            }
-            printf("\n");
-        }
+    j=akhir;
+    while (j!=awal) {
+        j=pred[j];
+        printf("<-%d",j);
     }
+    printf("\n");
 }
